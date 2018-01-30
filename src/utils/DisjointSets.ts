@@ -1,3 +1,7 @@
+/*	
+	The DisjointSets Data Structure
+	More info: https://en.wikipedia.org/wiki/Disjoint-set_data_structure */
+
 export class DisjointSets {
 	private _s: Array<number>;
 

@@ -1,14 +1,16 @@
 import { Point } from './Point';
-import * as svgjs from 'svg.js';
+import * as SVG from 'svg.js';
 
 export class Raster {
 	constructor(
-		private _context: svgjs.Doc, 
+		private _context: SVG.Doc, 
 		private _size: number, 
 		private _cells: number[], 
 		private _walls: number[][], 
 		private _width: number = 480
-	) {	}
+	) {
+		this._context.size(this._width, this._width).stroke({ width: 2, color: '#666' });
+	}
 
 	public get squareSize(): number {
 		return this._width / this._size;

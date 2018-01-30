@@ -1,17 +1,17 @@
 import { DisjointSets } from './DisjointSets';
 
 export class MazeGenerator {
-	public size: number;
 	public cells: number[];
 	public walls: number[][];
 
-	constructor(size: number = 5) {
-		this.size = size;
-		
+	constructor(
+		public size: number = 5
+	) {
 		this.generateCells();
 		this.generateWalls();
 	}
 
+	// Generate a random maze
 	public generate(): void {
 		const ds = new DisjointSets(this.cells.length);
 		const maze: number[][] = [];
@@ -26,6 +26,7 @@ export class MazeGenerator {
 		maze.forEach(item => this.walls.push(item));
 	}
 
+	// Fill the cells array
 	private generateCells(): void {
 		this.cells = [];
 		for (let i = 1; i <= this.size * this.size; i++) {
@@ -33,6 +34,7 @@ export class MazeGenerator {
 		}
 	}
 
+	// Fill the wall array
 	private generateWalls(): void {
 		this.walls = [];
 
@@ -57,6 +59,7 @@ export class MazeGenerator {
 		}
 	}
 
+	// Pick a random wall from walls
 	private randomWall(): number[] {
 		const index = Math.floor(Math.random() * this.walls.length);
 		return this.walls.splice(index, 1)[0];
