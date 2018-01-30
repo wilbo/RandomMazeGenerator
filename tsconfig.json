@@ -2,7 +2,8 @@
   "compilerOptions": {
     "outDir": "build/dist",
     "module": "esnext",
-    "target": "es5",
+		"target": "es5",
+		"baseUrl": "https://wilbo.github.io/RandomMazeGenerator/",
     "lib": ["es6", "dom"],
     "sourceMap": true,
     "allowJs": true,
