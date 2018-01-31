@@ -4,6 +4,7 @@ import Raster from '../utils/Raster';
 import DisjointSets from '../utils/DisjointSets';
 import { MazeGenerator } from '../utils/MazeGenerator';
 import Size from '../utils/Size';
+import WallFollower from '../utils/WallFollower';
 
 interface State {
 	size: Size;
@@ -39,8 +40,11 @@ class MazeComponent extends React.Component<{}, State> {
 		const old = document.querySelectorAll('svg')[0];
 		if (old) { old.remove(); }
 		
-		const raster = new Raster(SVG('maze'), mg.size, mg.cells, mg.walls);
+		const raster = new Raster(SVG('maze'), mg.size, mg.walls);
 		raster.draw();
+
+		const wf = new WallFollower(raster);
+		wf.solve();
 	}
 
 	render() {
