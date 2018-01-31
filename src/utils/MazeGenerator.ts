@@ -4,26 +4,24 @@ export class MazeGenerator {
 	public cells: number[];
 	public walls: number[][];
 
-	constructor(
-		public size: number = 5
-	) {
+	constructor(public size: number = 5) {
 		this.generateCells();
 		this.generateWalls();
 	}
 
-	// Generate a random maze
+	// Generate a random maze using the DisjointSets class
 	public generate(): void {
+		const walls: number[][] = [];
 		const ds = new DisjointSets(this.cells.length);
-		const maze: number[][] = [];
 
 		while (this.walls.length > 0) {
 			const randomWall = this.randomWall();
-			const u = ds.find(randomWall[0]);
-			const v = ds.find(randomWall[1]);
-			u !== v ? ds.union(u, v) : maze.push(randomWall);
+			const root1 = ds.find(randomWall[0]);
+			const root2 = ds.find(randomWall[1]);
+			root1 !== root2 ? ds.union(root1, root2) : walls.push(randomWall);
 		}
-
-		maze.forEach(item => this.walls.push(item));
+		
+		this.walls = walls;
 	}
 
 	// Fill the cells array
@@ -59,7 +57,7 @@ export class MazeGenerator {
 		}
 	}
 
-	// Pick a random wall from walls
+	// Pick a random wall from walls and remove it
 	private randomWall(): number[] {
 		const index = Math.floor(Math.random() * this.walls.length);
 		return this.walls.splice(index, 1)[0];

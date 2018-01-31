@@ -9,7 +9,7 @@ export class Raster {
 		private _walls: number[][], 
 		private _width: number = 480
 	) {
-		this._context.size(this._width, this._width).stroke({ width: 2, color: '#666' });
+		this._context.size(this._width, this._width).stroke({ width: 2, color: '#5C636E' });
 	}
 
 	public get squareSize(): number {
