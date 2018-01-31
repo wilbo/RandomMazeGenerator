@@ -1,10 +1,13 @@
-import { DisjointSets } from './DisjointSets';
+import DisjointSets from './DisjointSets';
+import Size from './Size';
 
 export class MazeGenerator {
 	public cells: number[];
 	public walls: number[][];
 
-	constructor(public size: number = 5) {
+	constructor(
+		public size: Size = new Size(20, 30)
+	) {
 		this.generateCells();
 		this.generateWalls();
 	}
@@ -27,7 +30,7 @@ export class MazeGenerator {
 	// Fill the cells array
 	private generateCells(): void {
 		this.cells = [];
-		for (let i = 1; i <= this.size * this.size; i++) {
+		for (let i = 1; i <= this.size.height * this.size.width; i++) {
 			this.cells.push(i);
 		}
 	}
@@ -41,7 +44,7 @@ export class MazeGenerator {
 			const current = this.cells[i];
 			const next = this.cells[i + 1];
 
-			if (next && current % this.size !== 0) {
+			if (next && current % this.size.width !== 0) {
 				this.walls.push([current, next]);
 			}
 		}
@@ -49,7 +52,7 @@ export class MazeGenerator {
 		// horizontal walls
 		for (let i = 0; i < this.cells.length; i++) {
 			const current = this.cells[i];
-			const next = this.cells[i + this.size];
+			const next = this.cells[i + this.size.width];
 
 			if (next) {
 				this.walls.push([current, next]);

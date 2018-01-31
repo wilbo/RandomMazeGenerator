@@ -1,27 +1,36 @@
 import * as React from 'react';
-import { Raster } from '../utils/Raster';
-import { DisjointSets } from '../utils/DisjointSets';
-import { MazeGenerator } from '../utils/MazeGenerator';
 import * as SVG from 'svg.js';
-import { EventHandler } from 'react';
+import Raster from '../utils/Raster';
+import DisjointSets from '../utils/DisjointSets';
+import { MazeGenerator } from '../utils/MazeGenerator';
+import Size from '../utils/Size';
 
-class MazeComponent extends React.Component {
-	_size: number = 480;
-	
+interface State {
+	size: Size;
+}
+
+class MazeComponent extends React.Component<{}, State> {	
 	state = {
-		size: 20
+		size: new Size(20, 30)
 	};
 
 	componentDidMount() {
 		this.generate();
 	}
+	
+	handleOnClick = () => this.generate();
 
-	handleChange = (evt: React.FormEvent<HTMLInputElement>): void => {
+	changeHeight = (evt: React.FormEvent<HTMLInputElement>): void => {
 		let value = parseInt(evt.currentTarget.value, 0);
-		this.setState({ size: value > 100 ? 100 : value });
+		value > 100 ? 100 : value;
+		this.setState((prevState: State) => ({ size: new Size(value, prevState.size.width) }));
 	}
 
-	handleOnClick = () => this.generate();
+	changeWidth = (evt: React.FormEvent<HTMLInputElement>): void => {
+		let value = parseInt(evt.currentTarget.value, 0);
+		value > 100 ? 100 : value;
+		this.setState((prevState: State) => ({ size: new Size(prevState.size.height, value) }));
+	}
 
 	generate = () => {
 		const mg = new MazeGenerator(this.state.size);
@@ -30,16 +39,17 @@ class MazeComponent extends React.Component {
 		const old = document.querySelectorAll('svg')[0];
 		if (old) { old.remove(); }
 		
-		const raster = new Raster(SVG('maze-canvas'), mg.size, mg.cells, mg.walls);
+		const raster = new Raster(SVG('maze'), mg.size, mg.cells, mg.walls);
 		raster.draw();
 	}
 
 	render() {
 		return (
 			<div className="maze-container">
-				<div id="maze-canvas" />
+				<div id="maze" />
 				<div style={{ marginBottom: 10 }}>
-					Size: <input type="range" value={this.state.size} onChange={this.handleChange} min="2" max="100" /> {this.state.size}
+					height: <input type="range" value={this.state.size.height} onChange={this.changeHeight} min="2" max="100" /> {this.state.size.height} <br />
+					width: <input type="range" value={this.state.size.width} onChange={this.changeWidth} min="2" max="100" /> {this.state.size.width}
 				</div>
 				<button onClick={this.handleOnClick}>Generate</button>
 			</div>

@@ -1,8 +1,9 @@
 /*	
 	The DisjointSets Data Structure
-	More info: https://en.wikipedia.org/wiki/Disjoint-set_data_structure */
+	More info: https://en.wikipedia.org/wiki/Disjoint-set_data_structure
+*/
 
-export class DisjointSets {
+export default class DisjointSets {
 	private _s: Array<number>;
 
 	constructor(numElems: number = 10) {

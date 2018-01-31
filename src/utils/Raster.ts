@@ -1,34 +1,38 @@
-import { Point } from './Point';
+import Point from './Point';
+import Size from './Size';
 import * as SVG from 'svg.js';
 
-export class Raster {
+export default class Raster {
 	constructor(
 		private _context: SVG.Doc, 
-		private _size: number, 
+		private _size: Size, 
 		private _cells: number[], 
-		private _walls: number[][], 
-		private _width: number = 480
+		private _walls: number[][]
 	) {
-		this._context.size(this._width, this._width).stroke({ width: 2, color: '#5C636E' });
+		this._context.size(this.sizeToPixels.width, this.sizeToPixels.height).stroke({ width: 2, color: '#5C636E' });
 	}
 
-	public get squareSize(): number {
-		return this._width / this._size;
+	public get cellSize(): number {
+		return 20;
+	}
+
+	public get sizeToPixels(): Size {
+		return new Size(this._size.height * this.cellSize, this._size.width * this.cellSize);
 	}
 
 	public cellToPixels(cell: number, center: boolean = false): Point {
 		let x = cell;
 		let y = cell;
 
-		// X-axis, reset when higher than size
-		while (x > this._size) {
-			x -= this._size;
+		// X-axis, reset when higher than size width
+		while (x > this._size.width) {
+			x -= this._size.width;
 		}
 
 		// Y-axis, divide by size
-		y = Math.ceil(y / this._size);
+		y = Math.ceil(y / this._size.width);
 
-		return new Point((x - 1) * this.squareSize, (y - 1) * this.squareSize).add(center ? (this.squareSize / 2) : 0);
+		return new Point((x - 1) * this.cellSize, (y - 1) * this.cellSize).add(center ? (this.cellSize / 2) : 0);
 	}
 
 	public draw(): void {
@@ -36,16 +40,18 @@ export class Raster {
 		for (let i = 0; i < this._walls.length; i++) {
 			const point1 = this.cellToPixels(this._walls[i][0]);
 			const point2 = this.cellToPixels(this._walls[i][1]);
-			this._context.line(point1.x + this.squareSize, point1.y + this.squareSize, point2.x, point2.y);
+			this._context.line(point1.x + this.cellSize, point1.y + this.cellSize, point2.x, point2.y);
 		}
 
 		this.drawBounds();
 	}
 
 	private drawBounds(): void {
-		this._context.line(0, 0, this._width, 0);
-		this._context.line(this._width, 0, this._width, this._width - this.squareSize);
-		this._context.line(this._width, this._width, 0, this._width);
-		this._context.line(0, this._width, 0, this.squareSize);
+		const { width, height } = this.sizeToPixels;
+
+		this._context.line(0, 0, width, 0);
+		this._context.line(width, 0, width, height - this.cellSize);
+		this._context.line(width, height, 0, height);
+		this._context.line(0, height, 0, this.cellSize);
 	}
 }

@@ -16,16 +16,25 @@ svg {
 	overflow: visible !important;
 }
 
+input[type='range'] {
+	margin-right: 10px;
+	background: #666;
+	height: 10px;
+}
+
+input[type='range']::-webkit-slider-thumb{
+	background: #ccc;
+	height: 30px;
+	width: 30px;
+	border-radius: 30px;
+}
+
 .maze-container {
 	padding: 20px 0;
 	text-align: center;
 }
 
-#maze-canvas {
+#maze {
+	overflow: visible !important;
 	margin-bottom: 40px;
-}
-
-input {
-	display: inline;
-	margin-right: 10px;
 }
