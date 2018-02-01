@@ -1,8 +1,8 @@
 import * as React from 'react';
 import * as SVG from 'svg.js';
-import Raster from '../utils/Raster';
+import MazeVisual from '../utils/MazeVisual';
 import DisjointSets from '../utils/DisjointSets';
-import { MazeGenerator } from '../utils/MazeGenerator';
+import { Maze } from '../utils/Maze';
 import Size from '../utils/Size';
 import WallFollower from '../utils/WallFollower';
 
@@ -11,6 +11,7 @@ interface State {
 }
 
 class MazeComponent extends React.Component<{}, State> {	
+	visualElement: HTMLElement;
 	state = {
 		size: new Size(20, 30)
 	};
@@ -34,23 +35,20 @@ class MazeComponent extends React.Component<{}, State> {
 	}
 
 	generate = () => {
-		const mg = new MazeGenerator(this.state.size);
-		mg.generate();
-		
-		const old = document.querySelectorAll('svg')[0];
-		if (old) { old.remove(); }
-		
-		const raster = new Raster(SVG('maze'), mg.size, mg.walls);
-		raster.draw();
+		const maze = new Maze(this.state.size);
+		maze.generate();
 
-		const wf = new WallFollower(raster);
-		wf.solve();
+		const visual = new MazeVisual(this.visualElement, maze.size, maze.walls);
+		visual.draw();
+		
+		// const wf = new WallFollower(raster);
+		// wf.solve();
 	}
 
 	render() {
 		return (
 			<div className="maze-container">
-				<div id="maze" />
+				<div ref={(ref: HTMLDivElement) => this.visualElement = ref} />
 				<div style={{ marginBottom: 10 }}>
 					height: <input type="range" value={this.state.size.height} onChange={this.changeHeight} min="2" max="100" /> {this.state.size.height} <br />
 					width: <input type="range" value={this.state.size.width} onChange={this.changeWidth} min="2" max="100" /> {this.state.size.width}

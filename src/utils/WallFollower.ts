@@ -1,6 +1,6 @@
 import * as SVG from 'svg.js';
 import Point from './Point';
-import Raster from './Raster';
+import MazeVisual from './MazeVisual';
 
 enum Direction {
 	North,
@@ -10,7 +10,7 @@ enum Direction {
 }
 
 export default class WallFollower {
-	constructor(private _raster: Raster) { }
+	constructor(private _raster: MazeVisual) { }
 
 	public solve(): void {
 		const endPoint = new Point(this._raster.size.width - 1, this._raster.size.height - 1);
@@ -45,6 +45,7 @@ export default class WallFollower {
 
 	private pointToCell(point: Point): number {
 		// TODO:
+		console.log(point);
 		return 0;
 	}
 
@@ -54,7 +55,6 @@ export default class WallFollower {
 			// point & nextpoint to cellnumber
 			// create [point, nextpoint]
 			// look for match in this._walls
-
 		return true;
 	}
 

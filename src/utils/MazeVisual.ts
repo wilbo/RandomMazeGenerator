@@ -2,15 +2,16 @@ import Point from './Point';
 import Size from './Size';
 import * as SVG from 'svg.js';
 
-export default class Raster {
+export default class MazeVisual {
 	public readonly CELL_SIZE = 20;
+	private _context: SVG.Doc;
 	
 	constructor(
-		private _context: SVG.Doc, 
+		private _element: HTMLElement,
 		private _size: Size,
 		private _walls: number[][]
 	) {
-		this._context.size(this.sizeToPixels.width, this.sizeToPixels.height).stroke({ width: 2, color: '#5C636E' });
+		this.draw();
 	}
 
 	public get context(): SVG.Doc {
@@ -45,14 +46,17 @@ export default class Raster {
 	}
 
 	public draw(): void {
-		// Draw _| shape for every square
+		// Clear previous drawing
+		this.clear();
+
+		// Create new svg with defaults 
+		this._context = this.drawDefaults();
+
+		// Draw walls
 		for (let i = 0; i < this._walls.length; i++) {
 			const point1 = this.cellToPixels(this._walls[i][0]);
 			const point2 = this.cellToPixels(this._walls[i][1]);
-			
-			// setTimeout(() => {
-				this._context.line(point1.x + this.CELL_SIZE, point1.y + this.CELL_SIZE, point2.x, point2.y);
-			// }, .5 * i);
+			this._context.line(point1.x + this.CELL_SIZE, point1.y + this.CELL_SIZE, point2.x, point2.y);
 		}
 
 		this.drawBounds();
@@ -65,5 +69,18 @@ export default class Raster {
 		this._context.line(width, 0, width, height - this.CELL_SIZE);
 		this._context.line(width, height, 0, height);
 		this._context.line(0, height, 0, this.CELL_SIZE);
+	}
+
+	private drawDefaults(): SVG.Doc {
+		return SVG(this._element)
+			.size(this.sizeToPixels.width, this.sizeToPixels.height)
+			.stroke({ width: 2, color: '#5C636E' });
+	}
+
+	private clear(): void {
+		const element = this._element.querySelectorAll('svg')[0];
+		if (element) { 
+			element.remove();
+		}
 	}
 }
