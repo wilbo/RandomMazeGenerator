@@ -30,6 +30,10 @@ button {
 	color: #333;
 }
 
+button:last-of-type {
+	margin-right: 0;
+}
+
 button:hover {
 	border-color: #aaa;
 }

@@ -58,9 +58,13 @@ class MazeComponent extends React.Component<{}, State> {
 					height: <input type="range" value={this.state.size.height} onChange={evt => this.handleChange(evt, true)} min="2" max="100" /> {this.state.size.height} <br />
 					width: <input type="range" value={this.state.size.width} onChange={evt => this.handleChange(evt)} min="2" max="100" /> {this.state.size.width}
 				</div>
-				<button onClick={this.generate}>Generate</button>
-				<button onClick={this.solveRight}>Solve keeping right</button>
-				<button onClick={this.solveLeft}>Solve keeping left</button>
+				<div>
+					<button onClick={this.generate}>Generate</button>
+					<button onClick={this.solveRight}>Solve keeping right</button>
+					<button onClick={this.solveLeft}>Solve keeping left</button>
+				</div>
+				<br />
+				<small><a href="https://github.com/wilbo/RandomMazeGenerator">source</a></small>
 			</div>
 		);
 	}
