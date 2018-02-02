@@ -2,7 +2,7 @@ import * as React from 'react';
 import * as SVG from 'svg.js';
 import MazeVisual from '../utils/MazeVisual';
 import DisjointSets from '../utils/DisjointSets';
-import { Maze } from '../utils/Maze';
+import Maze from '../utils/Maze';
 import Size from '../utils/Size';
 import WallFollower from '../utils/WallFollower';
 
@@ -11,7 +11,10 @@ interface State {
 }
 
 class MazeComponent extends React.Component<{}, State> {	
+	wallFollower: WallFollower;
+	wallFollowerLeft: WallFollower;
 	visualElement: HTMLElement;
+
 	state = {
 		size: new Size(20, 30)
 	};
@@ -20,8 +23,6 @@ class MazeComponent extends React.Component<{}, State> {
 		this.generate();
 	}
 	
-	handleOnClick = () => this.generate();
-
 	changeHeight = (evt: React.FormEvent<HTMLInputElement>): void => {
 		let value = parseInt(evt.currentTarget.value, 0);
 		value > 100 ? 100 : value;
@@ -41,8 +42,16 @@ class MazeComponent extends React.Component<{}, State> {
 		const visual = new MazeVisual(this.visualElement, maze.size, maze.walls);
 		visual.draw();
 		
-		// const wf = new WallFollower(raster);
-		// wf.solve();
+		this.wallFollower = new WallFollower(maze, visual);
+		this.wallFollowerLeft = new WallFollower(maze, visual, true);
+	}
+
+	solve = () => {
+		this.wallFollower.solve();
+	}
+
+	solveLeft = () => {
+		this.wallFollowerLeft.solve();
 	}
 
 	render() {
@@ -53,7 +62,9 @@ class MazeComponent extends React.Component<{}, State> {
 					height: <input type="range" value={this.state.size.height} onChange={this.changeHeight} min="2" max="100" /> {this.state.size.height} <br />
 					width: <input type="range" value={this.state.size.width} onChange={this.changeWidth} min="2" max="100" /> {this.state.size.width}
 				</div>
-				<button onClick={this.handleOnClick}>Generate</button>
+				<button onClick={this.generate}>Generate</button>
+				<button onClick={this.solve}>Solve keeping right</button>
+				{/* <button onClick={this.solveLeft}>Solve keeping left</button> */}
 			</div>
 		);
 	}

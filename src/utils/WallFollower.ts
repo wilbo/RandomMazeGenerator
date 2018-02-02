@@ -1,6 +1,8 @@
 import * as SVG from 'svg.js';
 import Point from './Point';
 import MazeVisual from './MazeVisual';
+import Size from './Size';
+import Maze from './Maze';
 
 enum Direction {
 	North,
@@ -10,26 +12,30 @@ enum Direction {
 }
 
 export default class WallFollower {
-	constructor(private _raster: MazeVisual) { }
+	constructor(
+		private _maze: Maze,
+		private _mazeVisual: MazeVisual,
+		private _leftHand: boolean = false
+	) { }
 
 	public solve(): void {
-		const endPoint = new Point(this._raster.size.width - 1, this._raster.size.height - 1);
-		let currentPoint = new Point(0, 0);
-		let prevPoint = new Point(-1, -1);
+		const endPoint = new Point(this._maze.size.width, this._maze.size.height);
+		// console.log(endPoint);
+		let currentPoint = new Point(1, 1);
+		let prevPoint = new Point(0, 0);
 
 		this.drawRect(currentPoint);
 
 		while (JSON.stringify(currentPoint) !== JSON.stringify(endPoint)) {
 			const delta = new Point(currentPoint.x - prevPoint.x, currentPoint.y - prevPoint.y);
 			const direction = this.getDirection(delta);
-			const priorities = this.getPriorities(direction);
+			const priorities = this.getPriorities(direction, this._leftHand);
 
 			for (let i = 0; i < priorities.length; i++) {
 				const nextPoint = this.nextPoint(currentPoint, priorities[i]);
 
 				// Check for out of bounds & reachable
-				if (!this.outOfBounds(nextPoint) && this.reachable(nextPoint)) {
-
+				if (!this.outOfBounds(nextPoint) && this.reachable(currentPoint, nextPoint)) {
 					// Draw the first priority
 					this.drawRect(nextPoint);
 
@@ -43,23 +49,25 @@ export default class WallFollower {
 		}
 	}
 
-	private pointToCell(point: Point): number {
-		// TODO:
-		console.log(point);
-		return 0;
-	}
+	private reachable(currentPoint: Point, nextPoint: Point): boolean {
+		const cell1 = this._mazeVisual.pointToCell(currentPoint);
+		const cell2 = this._mazeVisual.pointToCell(nextPoint);
 
-	private reachable(point: Point): boolean {
-		// TODO:
-		// Check if allowed 
-			// point & nextpoint to cellnumber
-			// create [point, nextpoint]
-			// look for match in this._walls
+		for (let i = 0; i < this._maze.walls.length; i++) {
+			if (cell1 === this._maze.walls[i][0] && cell2 === this._maze.walls[i][1]) {
+				return false;
+			}
+
+			if (cell2 === this._maze.walls[i][0] && cell1 === this._maze.walls[i][1]) {
+				return false;
+			}
+		}
+
 		return true;
 	}
 
-	private outOfBounds(point: Point): boolean {
-		return point.x < 0 || point.x >= this._raster.size.width || point.y < 0 || point.y >= this._raster.size.height;
+	private outOfBounds(nextPoint: Point): boolean {
+		return nextPoint.x < 1 || nextPoint.x > this._maze.size.width || nextPoint.y < 1 || nextPoint.y > this._maze.size.height;
 	}
 
 	private nextPoint(currentPoint: Point, direction: Direction): Point {
@@ -77,21 +85,19 @@ export default class WallFollower {
 		}
 	}
 
-	private getPriorities(direction: Direction): Direction[] {
+	private getPriorities(direction: Direction, leftHand: boolean = false): Direction[] {
 		switch (direction) {
 			case Direction.North:
-				return [ Direction.East, Direction.North, Direction.West, Direction.South ];
+				return leftHand ? [ Direction.South, Direction.East, Direction.North, Direction.West ] : [ Direction.East, Direction.North, Direction.West, Direction.South ];
 			case Direction.South:
 				return [ Direction.West, Direction.South, Direction.East, Direction.North ];
 			case Direction.East:
-				return [ Direction.South, Direction.East, Direction.North, Direction.West ];
+				return leftHand ? [ Direction.East, Direction.North, Direction.West, Direction.South ] : [ Direction.South, Direction.East, Direction.North, Direction.West ];
 			case Direction.West:
 				return [ Direction.North, Direction.West, Direction.South, Direction.East ];
 			default:
 				throw new Error('Wrong value of Direction');
 		}
-
-		// TODO: if(leftHandRule) { switch positions of array[0] and array[2] }
 	}
 
 	private getDirection(delta: Point): Direction {
@@ -114,12 +120,14 @@ export default class WallFollower {
 		throw new Error('Did not receive a correct delta');
 	}
 
-	private drawRect(point: Point, padding: number = 3): SVG.Rect {
-		return this._raster.context
-			.rect(this._raster.CELL_SIZE - (padding * 2), this._raster.CELL_SIZE - (padding * 2))
-			.x((point.x * this._raster.CELL_SIZE) + padding)
-			.y((point.y * this._raster.CELL_SIZE) + padding)
-			.fill({ color: '#43DDE6' })
+	private drawRect(point: Point, padding: number = 0): SVG.Rect {
+		const position = this._mazeVisual.pointToPixel(point);
+
+		return this._mazeVisual.context
+			.rect(this._mazeVisual.CELL_SIZE - (padding * 2), this._mazeVisual.CELL_SIZE - (padding * 2))
+			.x(position.x + padding)
+			.y(position.y + padding)
+			.fill({ color: this._leftHand ? '#FC4442' : '#43DDE6', opacity: .4 })
 			.stroke({ width: 0 });
 	}
 }

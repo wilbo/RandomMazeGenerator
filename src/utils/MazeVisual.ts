@@ -3,16 +3,14 @@ import Size from './Size';
 import * as SVG from 'svg.js';
 
 export default class MazeVisual {
-	public readonly CELL_SIZE = 20;
 	private _context: SVG.Doc;
 	
 	constructor(
 		private _element: HTMLElement,
 		private _size: Size,
-		private _walls: number[][]
-	) {
-		this.draw();
-	}
+		private _walls: number[][],
+		public readonly CELL_SIZE: number = 20
+	) {	}
 
 	public get context(): SVG.Doc {
 		return this._context;
@@ -22,40 +20,33 @@ export default class MazeVisual {
 		return new Size(this._size.height * this.CELL_SIZE, this._size.width * this.CELL_SIZE);
 	}
 
-	public get size(): Size {
-		return this._size;
+	public cellToPoint(cell: number): Point {
+		const rem = cell % this._size.width;
+		const x = rem === 0 ? this._size.width : rem;
+		const y = Math.ceil(cell / this._size.width);
+		return new Point(x, y);
 	}
 
-	public get walls(): number[][] {
-		return this._walls;
+	public pointToCell(point: Point): number {
+		let cell = point.x;
+		cell += ((point.y - 1) * this._size.width); // + _size.width for every y, starting from 0
+		return cell;
 	}
 
-	public cellToPixels(cell: number, center: boolean = false): Point {
-		let x = cell;
-		let y = cell;
-
-		// X-axis, reset when higher than size width
-		while (x > this._size.width) {
-			x -= this._size.width;
-		}
-
-		// Y-axis, divide by size width
-		y = Math.ceil(y / this._size.width);
-
-		return new Point((x - 1) * this.CELL_SIZE, (y - 1) * this.CELL_SIZE).add(center ? (this.CELL_SIZE / 2) : 0);
+	public pointToPixel(point: Point): Point {
+		return new Point((point.x - 1) * this.CELL_SIZE, (point.y - 1) * this.CELL_SIZE);
 	}
 
 	public draw(): void {
 		// Clear previous drawing
 		this.clear();
-
 		// Create new svg with defaults 
 		this._context = this.drawDefaults();
-
+		
 		// Draw walls
 		for (let i = 0; i < this._walls.length; i++) {
-			const point1 = this.cellToPixels(this._walls[i][0]);
-			const point2 = this.cellToPixels(this._walls[i][1]);
+			const point1 = this.pointToPixel(this.cellToPoint(this._walls[i][0]));
+			const point2 = this.pointToPixel(this.cellToPoint(this._walls[i][1]));
 			this._context.line(point1.x + this.CELL_SIZE, point1.y + this.CELL_SIZE, point2.x, point2.y);
 		}
 

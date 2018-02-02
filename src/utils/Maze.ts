@@ -2,7 +2,7 @@ import DisjointSets from './DisjointSets';
 import Size from './Size';
 import Point from './Point';
 
-export class Maze {
+export default class Maze {
 	private _walls: number[][];
 
 	constructor(private _size: Size = new Size(20, 30)) {
@@ -56,6 +56,7 @@ export class Maze {
 		}
 	}
 
+	// The amount of cells in the maze
 	private get cells(): number {
 		return this._size.height * this._size.width;
 	}
