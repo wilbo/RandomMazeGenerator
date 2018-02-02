@@ -11,7 +11,7 @@ interface State {
 }
 
 class MazeComponent extends React.Component<{}, State> {	
-	wallFollower: WallFollower;
+	wallFollowerRight: WallFollower;
 	wallFollowerLeft: WallFollower;
 	visualElement: HTMLElement;
 
@@ -23,16 +23,11 @@ class MazeComponent extends React.Component<{}, State> {
 		this.generate();
 	}
 	
-	changeHeight = (evt: React.FormEvent<HTMLInputElement>): void => {
-		let value = parseInt(evt.currentTarget.value, 0);
-		value > 100 ? 100 : value;
-		this.setState((prevState: State) => ({ size: new Size(value, prevState.size.width) }));
-	}
-
-	changeWidth = (evt: React.FormEvent<HTMLInputElement>): void => {
-		let value = parseInt(evt.currentTarget.value, 0);
-		value > 100 ? 100 : value;
-		this.setState((prevState: State) => ({ size: new Size(prevState.size.height, value) }));
+	handleChange = (evt: React.FormEvent<HTMLInputElement>, changeHeight: boolean = false): void => {
+		const value = parseInt(evt.currentTarget.value, 0);		
+		const { height, width } = this.state.size;
+		const size = changeHeight ? new Size(value, width)  : new Size(height, value);
+		this.setState({ size });
 	}
 
 	generate = () => {
@@ -42,12 +37,12 @@ class MazeComponent extends React.Component<{}, State> {
 		const visual = new MazeVisual(this.visualElement, maze.size, maze.walls);
 		visual.draw();
 		
-		this.wallFollower = new WallFollower(maze, visual);
+		this.wallFollowerRight = new WallFollower(maze, visual);
 		this.wallFollowerLeft = new WallFollower(maze, visual, true);
 	}
 
-	solve = () => {
-		this.wallFollower.solve();
+	solveRight = () => {
+		this.wallFollowerRight.solve();
 	}
 
 	solveLeft = () => {
@@ -57,14 +52,15 @@ class MazeComponent extends React.Component<{}, State> {
 	render() {
 		return (
 			<div className="maze-container">
+				<h1>Maze Generator</h1>
 				<div ref={(ref: HTMLDivElement) => this.visualElement = ref} />
-				<div style={{ marginBottom: 10 }}>
-					height: <input type="range" value={this.state.size.height} onChange={this.changeHeight} min="2" max="100" /> {this.state.size.height} <br />
-					width: <input type="range" value={this.state.size.width} onChange={this.changeWidth} min="2" max="100" /> {this.state.size.width}
+				<div style={{ margin: 20 }}>
+					height: <input type="range" value={this.state.size.height} onChange={evt => this.handleChange(evt, true)} min="2" max="100" /> {this.state.size.height} <br />
+					width: <input type="range" value={this.state.size.width} onChange={evt => this.handleChange(evt)} min="2" max="100" /> {this.state.size.width}
 				</div>
 				<button onClick={this.generate}>Generate</button>
-				<button onClick={this.solve}>Solve keeping right</button>
-				{/* <button onClick={this.solveLeft}>Solve keeping left</button> */}
+				<button onClick={this.solveRight}>Solve keeping right</button>
+				<button onClick={this.solveLeft}>Solve keeping left</button>
 			</div>
 		);
 	}

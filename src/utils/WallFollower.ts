@@ -20,7 +20,6 @@ export default class WallFollower {
 
 	public solve(): void {
 		const endPoint = new Point(this._maze.size.width, this._maze.size.height);
-		// console.log(endPoint);
 		let currentPoint = new Point(1, 1);
 		let prevPoint = new Point(0, 0);
 
@@ -88,13 +87,13 @@ export default class WallFollower {
 	private getPriorities(direction: Direction, leftHand: boolean = false): Direction[] {
 		switch (direction) {
 			case Direction.North:
-				return leftHand ? [ Direction.South, Direction.East, Direction.North, Direction.West ] : [ Direction.East, Direction.North, Direction.West, Direction.South ];
+				return [ (leftHand ? Direction.West : Direction.East), Direction.North, (leftHand ? Direction.East : Direction.West), Direction.South ];
 			case Direction.South:
-				return [ Direction.West, Direction.South, Direction.East, Direction.North ];
+				return [ (leftHand ? Direction.East : Direction.West), Direction.South, (leftHand ?  Direction.West : Direction.East), Direction.North ];
 			case Direction.East:
-				return leftHand ? [ Direction.East, Direction.North, Direction.West, Direction.South ] : [ Direction.South, Direction.East, Direction.North, Direction.West ];
+				return [ (leftHand ? Direction.North : Direction.South), Direction.East, (leftHand ? Direction.South : Direction.North), Direction.West ];
 			case Direction.West:
-				return [ Direction.North, Direction.West, Direction.South, Direction.East ];
+				return [ (leftHand ? Direction.South : Direction.North), Direction.West, (leftHand ? Direction.North : Direction.South), Direction.East ];
 			default:
 				throw new Error('Wrong value of Direction');
 		}
@@ -128,6 +127,7 @@ export default class WallFollower {
 			.x(position.x + padding)
 			.y(position.y + padding)
 			.fill({ color: this._leftHand ? '#FC4442' : '#43DDE6', opacity: .4 })
-			.stroke({ width: 0 });
+			.stroke({ width: 0 })
+			.back();
 	}
 }

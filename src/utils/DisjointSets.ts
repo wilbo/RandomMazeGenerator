@@ -60,7 +60,6 @@ export default class DisjointSets {
 
 	private assertIsItem(item: number): void {
 		if (item < 0 || item >= this._s.length) {
-			console.log(item);
 			throw new Error('item is not a valid item');
 		}
 	}
